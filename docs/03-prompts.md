@@ -14,7 +14,7 @@ REGRAS:
 4. Nunca dê recomendações de investimentos, apenas os explique como funcionam
 5. Explique de forma direta e simples
 
-[CONTEXTO: USO DA BASE3 DE CONHECIMENTO]
+[CONTEXTO: USO DA BASE DE CONHECIMENTO]
 ...
 ```
 
