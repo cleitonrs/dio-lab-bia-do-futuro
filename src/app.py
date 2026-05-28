@@ -1,5 +1,11 @@
 import json
 import pandas as pd
+import requests
+import streamlit as st
+
+# Configuração
+OLLAMA_URL = 'http://localhost:11434/api/generate'
+MODELO = 'gpt-oss'
 
 # Carregar dados
 perfil = json.load(open('./data/perfil_investidor.json'))
@@ -9,7 +15,7 @@ produtos = json.load(open('./data/produtos_financeiros.json'))
 
 # Montar contexto
 contexto = f'''
-CLIENTE: {perfil['nome']}, {perfil['idade']} anos, pefil {perfil['pefil_investidor']}
+CLIENTE: {perfil['nome']}, {perfil['idade']} anos, perfil {perfil['perfil_investidor']}
 OBJETIVO: {perfil['objetivo_principal']}
 PATRIMÔNIO: R$ {perfil['patrimonio_total']} | RESERVA: R$ {perfil['reserva_emergencia_atual']}
 
@@ -40,3 +46,26 @@ REGRAS:
 - Sempre pegunte se o cliente entendeu.
 - Dê respostas com no máximo 3 parágrafos.
 '''
+
+# Chamar Ollama
+
+def perguntar(msg):
+  prompt = f'''
+  {SYSTEM_PROMPT}
+
+  CONTEXTO DO CLIENTE:
+  {contexto}
+
+  Pergunta: {msg}
+'''
+  r = requests.post(OLLAMA_URL, json={'model': MODELO, 'prompt': prompt, 'stream': False} )
+  return r.json()['response'] 
+
+# Interface
+
+st.title('Sou a FIA, Sua Orientadora Financeira')
+
+if pergunta := st.chat_input('Sua dúvida sobre finanças...'):
+  st.chat_message('user').write(pergunta)
+  with st.spinner('...'):
+    st.chat_message('assistant').write(perguntar(pergunta)) 
